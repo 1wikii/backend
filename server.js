@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "./db.js";
+import connection from "./db.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 8000;
 //GET semua post
 app.get("/posts", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM posts");
+    const [rows] = await connection.query("SELECT * FROM posts");
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +26,7 @@ app.get("/posts", async (req, res) => {
 app.post("/posts", async (req, res) => {
   const { brand, name, price } = req.body;
   try {
-    const [result] = await pool.query(
+    const [result] = await connection.query(
       "INSERT INTO posts (brand, name, price) VALUES (?, ?, ?)",
       [brand, name, price]
     );
@@ -41,7 +41,7 @@ app.put("/posts/:id", async (req, res) => {
   const { brand, name, price } = req.body;
   const { id } = req.params;
   try {
-    await pool.query(
+    await connection.query(
       "UPDATE posts SET brand = ?, name = ?, price = ? WHERE id = ?",
       [brand, name, price, id]
     );
@@ -55,7 +55,7 @@ app.put("/posts/:id", async (req, res) => {
 app.delete("/posts/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    await pool.query("DELETE FROM posts WHERE id = ?", [id]);
+    await connection.query("DELETE FROM posts WHERE id = ?", [id]);
     res.json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
